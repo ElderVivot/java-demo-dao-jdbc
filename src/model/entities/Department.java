@@ -11,6 +11,9 @@ public class Department implements Serializable {
 	private Integer id;
 	private String name;
 	
+	public Department() {
+	}
+	
 	public Department(Integer id, String name) {
 		super();
 		this.id = id;
@@ -27,6 +30,10 @@ public class Department implements Serializable {
 
 	public Integer getId() {
 		return id;
+	}
+	
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	@Override

@@ -1,12 +1,14 @@
 package model.dao;
 
+import db.DB;
 import model.dao.impl.SellerDaoJDBC;
 
 // Factory é um padrão de programação onde retorna sempre um objeto
 public class DaoFactory {
 	
 	public static SellerDao createSellerDao() {
-		return new SellerDaoJDBC();
+		// na hora de retornar o resultado já faz a conexão com o banco
+		return new SellerDaoJDBC(DB.getConnection());
 	}
 
 }

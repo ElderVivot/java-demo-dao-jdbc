@@ -14,6 +14,10 @@ public class Seller implements Serializable {
 	private Double baseSalary;
 	
 	private Department department;
+	
+	public Seller() {
+		
+	}
 
 	public Seller(Integer id, String name, String email, Date birthDate, Double baseSalary, Department department) {
 		super();
@@ -67,6 +71,10 @@ public class Seller implements Serializable {
 
 	public Integer getId() {
 		return id;
+	}
+	
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	@Override
