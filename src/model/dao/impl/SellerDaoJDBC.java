@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import db.DB;
 import db.DBException;
@@ -77,6 +80,60 @@ public class SellerDaoJDBC implements SellerDao {
 		}
 	}
 
+	@Override
+	public List<Seller> findAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Seller> findByDepartment(Department department) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conexao.prepareStatement(
+					"SELECT seller.*,department.Name as DepartmentName\r\n" + 
+					"  FROM seller INNER JOIN department\r\n" + 
+					"    ON seller.DepartmentId = department.Id\r\n" + 
+					" WHERE department.Id = ?");
+			
+			st.setInt(1, department.getId());
+			
+			rs = st.executeQuery();
+			
+			List<Seller> sellers = new ArrayList<>();
+			
+			// vai servir pra controlar a verificação se o Department já existe, afim de ficar instanciando
+			// ele toda hora
+			Map<Integer, Department> map = new HashMap<>();
+			
+			// pode ter mais de um valor, visto que estou buscando pelo ID do depto, e pode ter vários
+			// vendedores vinculados à este
+			while(rs.next()) {
+				
+				int idDepto = rs.getInt("DepartmentId");
+				
+				// verifica se já existe um depto instanciado, se não retornar nada pelo id quer dizer que não existe
+				Department department_ = map.get(idDepto);
+				if(department_ == null) {
+					department_ = instantiateDepartment(rs);
+					map.put(idDepto, department_);
+				}
+						
+				Seller seller = instantiateSeller(rs, department_);
+				
+				sellers.add(seller);
+			}
+			return sellers;
+		} catch (SQLException e) {
+			throw new DBException(e.getMessage());
+		} finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
+	}
+	
+	// métodos de instanciação para auxílio
 	private Seller instantiateSeller(ResultSet rs, Department department) throws SQLException {
 		
 		Seller seller = new Seller();
@@ -96,12 +153,4 @@ public class SellerDaoJDBC implements SellerDao {
 		department.setName(rs.getString("DepartmentName"));
 		return department;
 	}
-
-	@Override
-	public List<Seller> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-
 }
